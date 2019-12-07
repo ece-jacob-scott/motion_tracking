@@ -1,3 +1,6 @@
+# Attempt at recreating basic algorithm described in paper
+# - https://tinyurl.com/tdtrwkw (need IEEE access)
+
 import numpy as np
 import cv2 as cv
 from math import sqrt
@@ -12,9 +15,6 @@ SCRIPT_DIR = getcwd()
 # [80:125, 290:330] and taking the average color based off a threshold of any
 # average color value above 50.
 REFERENCE_COLOR = (96, 96, 96)
-# Starting (ROWS, COLS)
-STARTING_POSITION = ((80, 125), (290, 330))
-S_POS = STARTING_POSITION
 # Found these threshold values by calculating the color match formula over the
 # starting range and taking the average of what I say from the da & dm values
 DA_THRESH = (200.0, 400.0)
