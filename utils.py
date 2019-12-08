@@ -4,34 +4,6 @@ from math import sqrt
 from typing import List, Union, Tuple, Dict
 
 
-def draw_rectangle(image: np.array, start: tuple, end: tuple) -> np.array:
-    cv.rectangle(image, start, end, color=(0, 255, 0), thickness=1)
-    return image
-
-
-def save_frame_to_file(frame: np.array, size: Union[Tuple, None] = None) -> None:
-    with open("frame.txt", "w+") as f:
-        for index, row in enumerate(frame):
-            f.write(f"{index}: ")
-            for col in row:
-                f.write(str(col))
-            f.write("\n")
-
-
-def average_color(frame: np.array, thresh_hold: int = 50) -> int:
-    pixels = 0
-    a_color = 0
-    for row in frame:
-        for col in row:
-            color = sum(col)
-            if color <= thresh_hold:
-                print("TEST")
-                continue
-            pixels += 1
-            a_color += color
-    return a_color // pixels
-
-
 def color_match(pixel: List[int], reference: List[int],
                 dm_thresh: Tuple[int] = (0, 1000), da_thresh: Tuple[int] = (0, 1000)) -> float:
     [R, G, B] = pixel

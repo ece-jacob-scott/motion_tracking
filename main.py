@@ -7,7 +7,7 @@ from math import sqrt
 from os import path, getcwd
 from pprint import pprint
 from typing import List, Union, Tuple, Dict
-from utils import draw_rectangle, color_match, calculate_shape, calculate_center, calculate_tracking
+from utils import color_match, calculate_shape, calculate_center, calculate_tracking
 
 VIDEO_FILE = "videos/grb_2.avi"
 SCRIPT_DIR = getcwd()
