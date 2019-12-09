@@ -14,7 +14,7 @@ SCRIPT_DIR = getcwd()
 # Got the reference color from finding the comet starting position
 # [80:125, 290:330] and taking the average color based off a threshold of any
 # average color value above 50.
-REFERENCE_COLOR = (96, 96, 96)
+REFERENCE_COLOR = (125, 125, 125)
 # Found these threshold values by calculating the color match formula over the
 # starting range and taking the average of what I say from the da & dm values
 DA_THRESH = (200.0, 400.0)
@@ -52,39 +52,54 @@ def add_target(frame: np.array, center: Tuple[int]):
 
 
 def main():
+    # Create a video capture object
     cap = cv.VideoCapture(path.join(SCRIPT_DIR, VIDEO_FILE))
+    # Initialize previous frame map variable
     prev_frame = None
     global INIT_CENTER
+    # Get the height and weight for the search area
     H_W, H_H = WIDTH // 2, HEIGHT // 2
     while cap.isOpened():
+        # Get the approximate center point for the object
         [I_X, I_Y] = INIT_CENTER
+        # Read the current frame
         ret, frame = cap.read()
+        # If the reading the frame failed break out of the loop
         if not ret:
             print("Failed to read frame")
             break
-        if cv.waitKey(1) == ord("q"):
+        # If the user pressed 'q' break out of the loop
+        if cv.waitKey(15) == ord("q"):
+            print("Stopped")
             break
-        # Break up frame into surrounding box
+        # Strip out the object search area using the initial
+        # points and the height and width values
         sub_frame = frame[I_Y-H_H:I_Y+H_H, I_X-H_W:I_X+H_W]
-        # if there was no previous frame then just map it out
+        # If there was no previous frame then create one
+        # and move onto the next frame
         if prev_frame is None:
             prev_frame = color_map(sub_frame, I_X-H_W, I_Y-H_H)
             continue
-        # if there was a previous frame
-        # Calculate centers
+        # If there was a previous frame calculate centers
         curr_frame_map = color_map(sub_frame, I_X-H_W, I_Y-H_H)
         c_center = calculate_center(curr_frame_map)
         shape = calculate_shape(curr_frame_map, prev_frame)
         s_center = calculate_center(shape)
         motion = calculate_tracking(curr_frame_map, prev_frame)
         m_center = calculate_center(motion)
+        # Find center of the object using the weighted sum of
+        # all the object's calculated centers.
         n_r = int((c_center[0] * C_W) +
                   (m_center[0] * M_W) + (s_center[0] * S_W))
         n_c = int((c_center[1] * C_W) +
                   (m_center[1] * M_W) + (s_center[1] * S_W))
+        # Set the current frame to the previous frame for the next loop
         prev_frame = curr_frame_map
+        # Update the initial center value
         INIT_CENTER = (n_r, n_c)
+        # Add the target around the tracked object
         frame = add_target(frame, (n_r, n_c))
+        # Show the frame with the target
         cv.imshow("Video", frame)
     cap.release()
     cv.destroyAllWindows()
